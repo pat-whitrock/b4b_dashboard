@@ -1,8 +1,11 @@
 require 'net/http'
 require 'json'
 require 'dotenv/load'
+require 'action_view'
 
 Dotenv.load
+
+include ActionView::Helpers::NumberHelper
 
 DISTRIBUTION_COUNT_QUERY_ID = 1734
 ACTIVE_PLAN_COUNT_QUERY_ID = 1741
@@ -17,8 +20,8 @@ FEES_BY_MONTH_QUERY_ID = 1757
 CURRENT_PERIOD_DISTRIBUTIONS_QUERY_ID = 1750
 PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID = 1749
 YTD_DISTRIBUTION_TOTALS_QUERY_ID = 1754
-B4B_AUM_BY_PLAN_ID = 1745
 YTD_CONTRIBUTION_TOTALS_QUERY_ID = 1756
+B4B_AUM_BY_PLAN_QUERY_ID = 1745
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -50,10 +53,10 @@ ACTIVE_PLAN_COUNT = -> {
 }
 
 PLANS_BY_AUM = -> {
-  REDASH_RESULTS_FOR.(B4B_AUM_BY_PLAN_ID)['query_result']['data']['rows'].sort_by do |row|
+  REDASH_RESULTS_FOR.(B4B_AUM_BY_PLAN_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
     -row['Plan_AUM']
   end.take(20).map do |row|
-    { label: row['Plan_Name'], value: row['Plan_AUM'] }
+    { label: row['Plan_Name'], value: number_to_currency(row['Plan_AUM']) }
   end
 }
 
@@ -61,7 +64,7 @@ PARTICIPANTS_BY_STATE = -> {
   REDASH_RESULTS_FOR.(PARTICIPANTS_BY_STATE_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
     -row['count']
   end.take(15).map do |row|
-    { label: row['state'], value: row['count'] }
+    { label: row['state'], value: number_with_delimiter(row['count']) }
   end
 }
 
