@@ -15,6 +15,7 @@ PREVIOUS_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_QUERY_ID = 1748
 CURRENT_PERIOD_DISTRIBUTIONS_QUERY_ID = 1750
 PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID = 1749
 YTD_DISTRIBUTION_TOTALS_QUERY_ID = 1754
+B4B_AUM_BY_PLAN_ID = 1745
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -43,6 +44,14 @@ DISTRIBUTION_COUNT = -> {
 
 ACTIVE_PLAN_COUNT = -> {
   REDASH_RESULTS_FOR.(ACTIVE_PLAN_COUNT_QUERY_ID)['query_result']['data']['rows'].first['COUNT(id)']
+}
+
+PLANS_BY_AUM = -> {
+  REDASH_RESULTS_FOR.(B4B_AUM_BY_PLAN_ID)['query_result']['data']['rows'].sort_by do |row|
+    -row['Plan_AUM']
+  end.take(20).map do |row|
+    { label: row['Plan_Name'], value: row['Plan_AUM'] }
+  end
 }
 
 PARTICIPANTS_BY_STATE = -> {
@@ -105,6 +114,9 @@ SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
 
+  plans_by_aum = PLANS_BY_AUM.()
+  send_event('plans_by_aum', { items: plans_by_aum })
+
   active_plan_count = ACTIVE_PLAN_COUNT.()
   send_event('active_plan_count', { current: active_plan_count, previous: active_plan_count })
 
@@ -131,7 +143,6 @@ SCHEDULER.every '60s', first_in: 0 do
   ytd_distribution_totals = YTD_DISTRIBUTION_TOTALS.()
   send_event('ytd_distribution_totals', { current: ytd_distribution_totals, previous: ytd_distribution_totals })
 
-##  latest_prime_rate = LATEST_PRIME_RATE.()
-##  send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
-
+  latest_prime_rate = LATEST_PRIME_RATE.()
+  send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
 end
