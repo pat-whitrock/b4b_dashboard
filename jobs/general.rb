@@ -4,22 +4,33 @@ require 'dotenv/load'
 
 Dotenv.load
 
-DISTRIBUTION_COUNT_URI = URI(
-  "https://redash.betterment.com/api/queries/1734/results.json?api_key=#{ENV['REDASH_API_KEY']}"
-).freeze
-PARTICIPANTS_BY_STATE_URI = URI(
-  "https://redash.betterment.com/api/queries/488/results.json?api_key=#{ENV['REDASH_API_KEY']}"
-).freeze
+DISTRIBUTION_COUNT_QUERY_ID = 1734
+PARTICIPANTS_BY_STATE_QUERY_ID = 488
 
-SCHEDULER.every '2s' do
-  distribution_count = JSON.parse(Net::HTTP.get(DISTRIBUTION_COUNT_URI))['query_result']['data']['rows'].first['count']
-  send_event('distribution_count', { current: distribution_count, previous: distribution_count })
+REDASH_RESULTS_FOR = ->(query_id) {
+  JSON.parse(
+    Net::HTTP.get(
+      URI("https://redash.betterment.com/api/queries/#{query_id}/results.json?api_key=#{ENV['REDASH_API_KEY']}")
+    )
+  )
+}
 
-  participants_by_state = JSON.parse(Net::HTTP.get(PARTICIPANTS_BY_STATE_URI))
-  top_states = participants_by_state['query_result']['data']['rows'].sort_by do |row|
+DISTRIBUTION_COUNT = -> {
+  REDASH_RESULTS_FOR.(DISTRIBUTION_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
+}
+
+PARTICIPANTS_BY_STATE = -> {
+  REDASH_RESULTS_FOR.(PARTICIPANTS_BY_STATE_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
     -row['count']
   end.take(15).map do |row|
     { label: row['state'], value: row['count'] }
   end
-  send_event('participants_by_state', { items: top_states })
+}
+
+SCHEDULER.every '2s' do
+  distribution_count = DISTRIBUTION_COUNT.()
+  send_event('distribution_count', { current: distribution_count, previous: distribution_count })
+
+  participants_by_state = PARTICIPANTS_BY_STATE.()
+  send_event('participants_by_state', { items: participants_by_state })
 end
