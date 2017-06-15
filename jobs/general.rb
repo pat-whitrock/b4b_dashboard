@@ -5,6 +5,7 @@ require 'dotenv/load'
 Dotenv.load
 
 DISTRIBUTION_COUNT_QUERY_ID = 1734
+ACTIVE_PLAN_COUNT_QUERY_ID = 1741
 PARTICIPANTS_BY_STATE_QUERY_ID = 1742
 TOTAL_B4B_AUM_QUERY_ID = 1738
 
@@ -18,6 +19,10 @@ REDASH_RESULTS_FOR = ->(query_id) {
 
 DISTRIBUTION_COUNT = -> {
   REDASH_RESULTS_FOR.(DISTRIBUTION_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
+}
+
+ACTIVE_PLAN_COUNT = -> {
+  REDASH_RESULTS_FOR.(ACTIVE_PLAN_COUNT_QUERY_ID)['query_result']['data']['rows'].first['COUNT(id)']
 }
 
 PARTICIPANTS_BY_STATE = -> {
@@ -35,6 +40,9 @@ TOTAL_B4B_AUM = -> {
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
+
+  active_plan_count = ACTIVE_PLAN_COUNT.()
+  send_event('active_plan_count', { current: active_plan_count, previous: active_plan_count })
 
   participants_by_state = PARTICIPANTS_BY_STATE.()
   send_event('participants_by_state', { items: participants_by_state })
