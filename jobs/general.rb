@@ -12,6 +12,8 @@ ON_CALL_COUNT_QUERY_ID = 1737
 ON_CALL_BY_MONTH_QUERY_ID = 1744
 CURRENT_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_QUERY_ID = 1747
 PREVIOUS_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_QUERY_ID = 1748
+CASHFLOW_BY_MONTH_QUERY_ID = 1746
+FEES_BY_MONTH_QUERY_ID = 1757
 CURRENT_PERIOD_DISTRIBUTIONS_QUERY_ID = 1750
 PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID = 1749
 YTD_DISTRIBUTION_TOTALS_QUERY_ID = 1754
@@ -71,8 +73,20 @@ ON_CALL_COUNT = -> {
 }
 
 ON_CALL_BY_MONTH = -> {
-  REDASH_RESULTS_FOR.(ON_CALL_BY_MONTH_QUERY_ID)['query_result']['data']['rows'].each_with_index.map do |row, i|
-    { x: i, y: row['count'] }
+  REDASH_RESULTS_FOR.(ON_CALL_BY_MONTH_QUERY_ID)['query_result']['data']['rows'].map do |row|
+    { x: row['code'].to_i, y: row['count'] }
+  end
+}
+
+CASHFLOW_BY_MONTH = -> {
+  REDASH_RESULTS_FOR.(CASHFLOW_BY_MONTH_QUERY_ID)['query_result']['data']['rows'].map do |row|
+    { x: row['code'].to_i, y: row['amount'] }
+  end
+}
+
+FEES_BY_MONTH = -> {
+  REDASH_RESULTS_FOR.(FEES_BY_MONTH_QUERY_ID)['query_result']['data']['rows'].map do |row|
+    { x: row['code'].to_i, y: row['amount'] }
   end
 }
 
@@ -139,6 +153,12 @@ SCHEDULER.every '60s', first_in: 0 do
       last: PREVIOUS_PERIOD_PAPERLESS_DISTRIBUTION_RATIO.().round(1)
     }
   )
+
+  cashflow_by_month = CASHFLOW_BY_MONTH.()
+  send_event('cashflow_by_month', { points: cashflow_by_month })
+
+  fees_by_month = FEES_BY_MONTH.()
+  send_event('fees_by_month', { points: fees_by_month })
 
   ytd_distribution_totals = YTD_DISTRIBUTION_TOTALS.()
   send_event('ytd_distribution_totals', { current: ytd_distribution_totals, previous: ytd_distribution_totals })
