@@ -18,6 +18,19 @@ REDASH_RESULTS_FOR = ->(query_id) {
   )
 }
 
+LATEST_PRIME_RATE = -> {
+  newest_available_date = JSON.parse(
+    Net::HTTP.get(
+      URI("https://www.quandl.com/api/v3/datasets/FRED/DPRIME/metadata.json?api_key=#{ENV['QUANDL_API_KEY']}")
+    )
+  )['dataset']['newest_available_date']
+  latest_prime_rate = JSON.parse(
+    Net::HTTP.get(
+      URI("https://www.quandl.com/api/v3/datasets/FRED/DPRIME.json?start_date=#{newest_available_date}&api_key=#{ENV['QUANDL_API_KEY']}")
+    )
+  )['dataset']['data'][0][1].to_s + '%'
+}
+
 DISTRIBUTION_COUNT = -> {
   REDASH_RESULTS_FOR.(DISTRIBUTION_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
 }
@@ -57,4 +70,7 @@ SCHEDULER.every '60s', first_in: 0 do
 
   on_call_count = ON_CALL_COUNT.()
   send_event('on_call_count', { current: on_call_count, previous: on_call_count })
+
+  latest_prime_rate = LATEST_PRIME_RATE.()
+  send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
 end
