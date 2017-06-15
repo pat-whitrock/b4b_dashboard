@@ -12,6 +12,7 @@ GEM
     daemons (1.2.4)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.2.1)
     equalizer (0.0.11)
     eventmachine (1.2.3)
     execjs (2.0.2)
@@ -96,6 +97,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   smashing
   twitter (>= 5.9.0)
 
