@@ -22,6 +22,8 @@ PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID = 1749
 YTD_DISTRIBUTION_TOTALS_QUERY_ID = 1754
 YTD_CONTRIBUTION_TOTALS_QUERY_ID = 1756
 B4B_AUM_BY_PLAN_QUERY_ID = 1745
+NINETY_DAY_CONTRIBUTION_TOTALS_QUERY_ID = 1759
+NINETY_DAY_DISTRIBUTION_TOTALS_QUERY_ID = 1760
 MATE_COUNT_QUERY_ID = 1758
 
 REDASH_RESULTS_FOR = ->(query_id) {
@@ -137,6 +139,14 @@ YTD_CONTRIBUTION_TOTALS = -> {
   REDASH_RESULTS_FOR.(YTD_CONTRIBUTION_TOTALS_QUERY_ID)['query_result']['data']['rows'].first['ytd_contributions']
 }
 
+NINETY_DAY_DISTRIBUTION_TOTALS = -> {
+  REDASH_RESULTS_FOR.(NINETY_DAY_DISTRIBUTION_TOTALS_QUERY_ID)['query_result']['data']['rows'].first['ninety_day_distributions']
+}
+
+NINETY_DAY_CONTRIBUTION_TOTALS = -> {
+  REDASH_RESULTS_FOR.(NINETY_DAY_CONTRIBUTION_TOTALS_QUERY_ID)['query_result']['data']['rows'].first['ninety_day_contributions']
+}
+
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
@@ -181,6 +191,12 @@ SCHEDULER.every '60s', first_in: 0 do
 
   ytd_contribution_totals = YTD_CONTRIBUTION_TOTALS.()
   send_event('ytd_contribution_totals', { current: ytd_contribution_totals, previous: ytd_contribution_totals })
+
+  ninety_day_distribution_totals = NINETY_DAY_DISTRIBUTION_TOTALS.()
+  send_event('ninety_day_distribution_totals', { current: ninety_day_distribution_totals, previous: ninety_day_distribution_totals })
+
+  ninety_day_contribution_totals = NINETY_DAY_CONTRIBUTION_TOTALS.()
+  send_event('ninety_day_contribution_totals', { current: ninety_day_contribution_totals, previous: ninety_day_contribution_totals })
 
   latest_prime_rate = LATEST_PRIME_RATE.()
   send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
