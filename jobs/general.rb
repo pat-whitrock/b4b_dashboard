@@ -8,6 +8,7 @@ DISTRIBUTION_COUNT_QUERY_ID = 1734
 ACTIVE_PLAN_COUNT_QUERY_ID = 1741
 PARTICIPANTS_BY_STATE_QUERY_ID = 1742
 TOTAL_B4B_AUM_QUERY_ID = 1738
+ON_CALL_COUNT_QUERY_ID = 1737
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -37,6 +38,10 @@ TOTAL_B4B_AUM = -> {
   REDASH_RESULTS_FOR.(TOTAL_B4B_AUM_QUERY_ID)['query_result']['data']['rows'].first['AUM']
 }
 
+ON_CALL_COUNT = -> {
+  REDASH_RESULTS_FOR.(ON_CALL_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
+}
+
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
@@ -49,4 +54,7 @@ SCHEDULER.every '60s', first_in: 0 do
 
   total_b4b_aum = TOTAL_B4B_AUM.()
   send_event('total_b4b_aum', { current: total_b4b_aum, previous: total_b4b_aum })
+
+  on_call_count = ON_CALL_COUNT.()
+  send_event('on_call_count', { current: on_call_count, previous: on_call_count })
 end
