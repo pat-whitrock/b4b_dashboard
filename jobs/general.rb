@@ -5,7 +5,7 @@ require 'dotenv/load'
 Dotenv.load
 
 DISTRIBUTION_COUNT_QUERY_ID = 1734
-PARTICIPANTS_BY_STATE_QUERY_ID = 488
+PARTICIPANTS_BY_STATE_QUERY_ID = 1742
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -27,7 +27,7 @@ PARTICIPANTS_BY_STATE = -> {
   end
 }
 
-SCHEDULER.every '2s' do
+SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
 
