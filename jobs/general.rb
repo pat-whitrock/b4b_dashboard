@@ -14,6 +14,7 @@ CURRENT_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_QUERY_ID = 1747
 PREVIOUS_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_QUERY_ID = 1748
 CURRENT_PERIOD_DISTRIBUTIONS_QUERY_ID = 1750
 PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID = 1749
+YTD_DISTRIBUTION_TOTALS_QUERY_ID = 1754
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -96,6 +97,10 @@ PREVIOUS_PERIOD_PAPERLESS_DISTRIBUTION_RATIO = -> {
   ).to_f * 100.0
 }
 
+YTD_DISTRIBUTION_TOTALS = -> {
+  REDASH_RESULTS_FOR.(YTD_DISTRIBUTION_TOTALS_QUERY_ID)['query_result']['data']['rows'].first['ytd_distributions']
+}
+
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
@@ -112,9 +117,6 @@ SCHEDULER.every '60s', first_in: 0 do
   on_call_count = ON_CALL_COUNT.()
   send_event('on_call_count', { current: on_call_count, previous: on_call_count })
 
-  latest_prime_rate = LATEST_PRIME_RATE.()
-  send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
-
   on_call_by_month = ON_CALL_BY_MONTH.()
   send_event('on_call_by_month', { points: on_call_by_month })
 
@@ -125,4 +127,11 @@ SCHEDULER.every '60s', first_in: 0 do
       last: PREVIOUS_PERIOD_PAPERLESS_DISTRIBUTION_RATIO.().round(1)
     }
   )
+
+  ytd_distribution_totals = YTD_DISTRIBUTION_TOTALS.()
+  send_event('ytd_distribution_totals', { current: ytd_distribution_totals, previous: ytd_distribution_totals })
+
+##  latest_prime_rate = LATEST_PRIME_RATE.()
+##  send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
+
 end
