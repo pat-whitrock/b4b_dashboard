@@ -9,6 +9,7 @@ ACTIVE_PLAN_COUNT_QUERY_ID = 1741
 PARTICIPANTS_BY_STATE_QUERY_ID = 1742
 TOTAL_B4B_AUM_QUERY_ID = 1738
 ON_CALL_COUNT_QUERY_ID = 1737
+ON_CALL_BY_MONTH_QUERY_ID = 1744
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -55,6 +56,12 @@ ON_CALL_COUNT = -> {
   REDASH_RESULTS_FOR.(ON_CALL_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
 }
 
+ON_CALL_BY_MONTH = -> {
+  REDASH_RESULTS_FOR.(ON_CALL_BY_MONTH_QUERY_ID)['query_result']['data']['rows'].each_with_index.map do |row, i|
+    { x: i, y: row['count'] }
+  end
+}
+
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
@@ -73,4 +80,7 @@ SCHEDULER.every '60s', first_in: 0 do
 
   latest_prime_rate = LATEST_PRIME_RATE.()
   send_event('latest_prime_rate', { current: latest_prime_rate, previous: latest_prime_rate })
+
+  on_call_by_month = ON_CALL_BY_MONTH.()
+  send_event('on_call_by_month', { points: on_call_by_month })
 end
