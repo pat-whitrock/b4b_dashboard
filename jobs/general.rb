@@ -6,6 +6,7 @@ Dotenv.load
 
 DISTRIBUTION_COUNT_QUERY_ID = 1734
 PARTICIPANTS_BY_STATE_QUERY_ID = 1742
+TOTAL_B4B_AUM_QUERY_ID = 1738
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -27,10 +28,17 @@ PARTICIPANTS_BY_STATE = -> {
   end
 }
 
+TOTAL_B4B_AUM = -> {
+  REDASH_RESULTS_FOR.(TOTAL_B4B_AUM_QUERY_ID)['query_result']['data']['rows'].first['AUM']
+}
+
 SCHEDULER.every '60s', first_in: 0 do
   distribution_count = DISTRIBUTION_COUNT.()
   send_event('distribution_count', { current: distribution_count, previous: distribution_count })
 
   participants_by_state = PARTICIPANTS_BY_STATE.()
   send_event('participants_by_state', { items: participants_by_state })
+
+  total_b4b_aum = TOTAL_B4B_AUM.()
+  send_event('total_b4b_aum', { current: total_b4b_aum, previous: total_b4b_aum })
 end
