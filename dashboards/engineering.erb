@@ -1,0 +1,49 @@
+<% content_for :title do %>B4B Engineering Dashboard<% end %>
+
+<div class="gridster">
+  <ul>
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="total_b4b_aum" data-view="Number" data-title="B4B AUM" data-prefix="$"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="mate_count" data-view="Number" data-title="MATEs" data-moreinfo="MATEs with a b4b balance"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="distribution_count" data-view="Number" data-title="Distributions"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="active_plan_count" data-view="Number" data-title="Active plans"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="ytd_contribution_totals" data-view="Number" style="background-color:#2ecc71" data-title="YTD Inflows" data-prefix="$"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="4" data-sizey="1">
+      <div data-id="fees_by_month" data-view="Graph" data-title="Fees Collected By Month" data-prefix="This Month: $" style="background-color:#ff9618"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="paperless_distribution_ratio" data-view="Number" data-title="Paperless Distribution Ratio" data-suffix="%" data-moreinfo="last 3 months"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="ytd_distribution_totals" data-view="Number" style="background-color:#e82711" data-title="YTD Outflows" data-prefix="$"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="4" data-sizey="1">
+      <div data-id="on_call_by_month" data-view="Graph" data-title="Manually Updated Records By Month" data-prefix="This Month: " style="background-color:#ff9618"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+      <div data-id="on_call_count" data-view="Number" data-title="Manually Updated Records"></div>
+    </li>
+
+    <li data-row="1" data-col="1" data-sizex="4" data-sizey="1">
+      <div data-id="cashflow_by_month" data-view="Graph" data-title="Cashflow By Month" data-prefix="This Month: $" style="background-color:#ff9618"></div>
+    </li>
+  </ul>
+</div>

@@ -24,6 +24,7 @@ YTD_CONTRIBUTION_TOTALS_QUERY_ID = 1756
 B4B_AUM_BY_PLAN_QUERY_ID = 1745
 NINETY_DAY_CONTRIBUTION_TOTALS_QUERY_ID = 1759
 NINETY_DAY_DISTRIBUTION_TOTALS_QUERY_ID = 1760
+MATE_COUNT_QUERY_ID = 1758
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -112,6 +113,10 @@ PREVIOUS_PERIOD_DISTRIBUTIONS_COUNT = -> {
   REDASH_RESULTS_FOR.(PREVIOUS_PERIOD_DISTRIBUTIONS_QUERY_ID)['query_result']['data']['rows'].first['count']
 }
 
+MATE_COUNT = -> {
+  REDASH_RESULTS_FOR.(MATE_COUNT_QUERY_ID)['query_result']['data']['rows'].first['count']
+}
+
 CURRENT_PERIOD_PAPERLESS_DISTRIBUTION_RATIO = -> {
   (
     CURRENT_PERIOD_APPROVED_PAPERLESS_DISTRIBUTIONS_COUNT.() /
@@ -151,6 +156,9 @@ SCHEDULER.every '60s', first_in: 0 do
 
   active_plan_count = ACTIVE_PLAN_COUNT.()
   send_event('active_plan_count', { current: active_plan_count, previous: active_plan_count })
+
+  mate_count = MATE_COUNT.()
+  send_event('mate_count', { current: mate_count, previous: mate_count })
 
   participants_by_state = PARTICIPANTS_BY_STATE.()
   send_event('participants_by_state', { items: participants_by_state })
