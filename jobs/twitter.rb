@@ -10,7 +10,7 @@ twitter = Twitter::REST::Client.new do |config|
   config.access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET']
 end
 
-search_term = URI::encode('#betterment')
+search_term = URI::encode('@betterment')
 
 SCHEDULER.every '10m', :first_in => 0 do |job|
   begin
