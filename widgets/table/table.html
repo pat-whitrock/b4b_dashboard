@@ -2,9 +2,9 @@
 
 <table class="plansByAUM">
   <tr class="planName">
-    <th>Plan</th>
-    <th>AUM</th>
-    <th>Last Payroll</th>
+    <th class="leftAlign">Plan</th>
+    <th class="rightAlign">AUM</th>
+    <th class="rightAlign">Last Payroll</th>
   </tr>
   <tr data-foreach-item="items">
     <td class="leftAlign"><span class="label" data-bind="item.label"></span></td>
@@ -12,3 +12,5 @@
     <td class="rightAlign"><span class="column_two" data-bind="item.column_two"></span></td>
   </tr>
 </table>
+
+<p class="updated-at" data-bind="updatedAtMessage"></p>

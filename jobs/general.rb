@@ -80,7 +80,7 @@ def most_recent_payroll_amount_for_plan(plan_id)
 end
 
 def most_recent_payroll_by_plan
-  @most_recent_payroll_by_plan ||= MOST_RECENT_PAYROLL_BY_PLAN.()
+  MOST_RECENT_PAYROLL_BY_PLAN.()
 end
 
 PARTICIPANTS_BY_STATE = -> {
