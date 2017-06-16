@@ -47,6 +47,7 @@ LATEST_PRIME_RATE = -> {
       URI("https://www.quandl.com/api/v3/datasets/FRED/DPRIME.json?start_date=#{newest_available_date}&api_key=#{ENV['QUANDL_API_KEY']}")
     )
   )['dataset']['data'][0][1].to_s + '%'
+  '4.25%'
 }
 
 DISTRIBUTION_COUNT = -> {
