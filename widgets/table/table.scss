@@ -1,0 +1,35 @@
+.plans_by_aum {
+  background-color: #12b0c5;
+
+  .title {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .planName {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .table-nostyle {
+
+    .label {
+      float: left; width: 33%;
+    }
+
+    .column_one {
+      float: right; width: 33%;
+    }
+
+    .column_two {
+      display: inline-block; width: 33%;
+    }
+  }
+
+  .leftAlign {
+    text-align: left;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .rightAlign {
+    text-align: right;
+  }
+}

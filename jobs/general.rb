@@ -60,7 +60,7 @@ PLANS_BY_AUM = -> {
   REDASH_RESULTS_FOR.(B4B_AUM_BY_PLAN_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
     -row['Plan_AUM']
   end.take(20).map do |row|
-    { label: row['Plan_Name'], value: number_to_currency(row['Plan_AUM']) }
+    { label: row['Plan_Name'], column_one: number_to_currency(row['Plan_AUM']), column_two: '$200' }
   end
 }
 
