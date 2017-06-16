@@ -26,6 +26,7 @@ NINETY_DAY_CONTRIBUTION_TOTALS_QUERY_ID = 1759
 NINETY_DAY_DISTRIBUTION_TOTALS_QUERY_ID = 1760
 MATE_COUNT_QUERY_ID = 1758
 RETAIL_DEPOSITS_QUERY_ID = 1761
+MOST_RECENT_PAYROLL_BY_PLAN_QUERY_ID = 1762
 
 REDASH_RESULTS_FOR = ->(query_id) {
   JSON.parse(
@@ -60,9 +61,27 @@ PLANS_BY_AUM = -> {
   REDASH_RESULTS_FOR.(B4B_AUM_BY_PLAN_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
     -row['Plan_AUM']
   end.take(20).map do |row|
-    { label: row['Plan_Name'], column_one: number_to_currency(row['Plan_AUM']), column_two: '$200' }
+    { label: row['Plan_Name'], column_one: number_to_currency(row['Plan_AUM']), column_two: most_recent_payroll_amount_for_plan(row['Plan_ID']) }
   end
 }
+
+MOST_RECENT_PAYROLL_BY_PLAN = -> {
+  REDASH_RESULTS_FOR.(MOST_RECENT_PAYROLL_BY_PLAN_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
+    -row['plan_id']
+  end.map do |row|
+    { plan_id: row['plan_id'], most_recent_payroll_amount: row['most_recent_payroll'] }
+  end
+}
+
+def most_recent_payroll_amount_for_plan(plan_id)
+  payroll_info = most_recent_payroll_by_plan.detect{|row| row[:plan_id] == plan_id }
+  payroll_amount = payroll_info[:most_recent_payroll_amount]
+  number_to_currency(payroll_amount)
+end
+
+def most_recent_payroll_by_plan
+  @most_recent_payroll_by_plan ||= MOST_RECENT_PAYROLL_BY_PLAN.()
+end
 
 PARTICIPANTS_BY_STATE = -> {
   REDASH_RESULTS_FOR.(PARTICIPANTS_BY_STATE_QUERY_ID)['query_result']['data']['rows'].sort_by do |row|
